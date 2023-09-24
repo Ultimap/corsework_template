@@ -6,7 +6,7 @@ from models import Users, Category, Roles, Items
 import jwt
 from fastapi import Depends, HTTPException
 
-async_engine = create_async_engine(DATABASE_URL)
+async_engine = create_async_engine(DATABASE_URL, echo=True)
 async_session = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
 
 
@@ -31,6 +31,7 @@ async def verify_token(token: str):
 
 async def get_user_by_jwt(token: str = Depends(oauth2scheme)):
     decode_data = await verify_token(token)
+    print(decode_data)
     if not decode_data:
         raise HTTPException(status_code=400, detail='invalid token')
     user = await get_user_by_username(decode_data['sub'])

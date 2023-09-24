@@ -18,9 +18,11 @@ async def get_categories(db: AsyncSession = Depends(get_session)):
 
 
 @category.post('/add', status_code=201)
-async def create(name: CategoryScheme,db: AsyncSession = Depends(get_session), user: Users = Depends(get_user_by_jwt)) -> dict:
-    role = await get_role_by_user(user, db)
-    if role in ('admin', 'manager'):
+async def create(name: CategoryScheme,db: AsyncSession = Depends(get_session),
+                 # user: Users = Depends(get_user_by_jwt)
+                 ) -> dict:
+    # role = await get_role_by_user(user, db)
+    # if role in ('admin', 'manager'):
         try:
             new_category = Category(name=name.name)
             db.add(new_category)
@@ -28,7 +30,7 @@ async def create(name: CategoryScheme,db: AsyncSession = Depends(get_session), u
             return {'message': 'Success'}
         except:
             raise HTTPException(status_code=409, detail='category is exist')
-    raise HTTPException(status_code=403, detail='Forbidden')
+    # raise HTTPException(status_code=403, detail='Forbidden')
 
 
 @category.put('/{id}/edit', status_code=200)

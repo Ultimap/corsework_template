@@ -35,7 +35,14 @@ class Items(Base):
     name = Column(String, nullable=False, unique=True)
     img = Column(String, default='placeholder.png')
     description = Column(Text, nullable=True)
-    characteristics = Column(JSON)
+    characteristics = Column(String)
     quantity = Column(Integer, default=0)
     cost = Column(Integer, default=0)
     category = Column(ForeignKey(Category.id))
+
+
+class UserItem(Base):
+    __tablename__ = 'UserItem'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user = Column(ForeignKey(Users.id))
+    item = Column(ForeignKey(Items.id))

@@ -2,15 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, Form
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 import bcrypt
-from models import Users
+from models import Users, UserItem
 from database import get_session, get_user_by_username, get_user_by_jwt
 from datetime import datetime, timedelta
 import jwt
 from settings import SECRET_KEY, ALGORITH
 from sqlalchemy import update
 from typing import Optional
-
-EXPIRATION_TIME = timedelta(minutes=30)
+from sqlalchemy import  select
+EXPIRATION_TIME = timedelta(days=365)
 
 auth = APIRouter(prefix='/auth', tags=['User'])
 
@@ -19,6 +19,10 @@ class CreateUser(BaseModel):
     username: str
     email: EmailStr
     password: str
+
+
+class AddItemInBasket(BaseModel):
+    item: int
 
 
 async def hashing_password(password) -> str:
@@ -70,3 +74,24 @@ async def delete(user: Users = Depends(get_user_by_jwt), db: AsyncSession = Depe
     await db.delete(user)
     await db.commit()
     return {'message': 'Success'}
+
+
+@auth.post('/add_basket', status_code=200)
+async def add_item_in_basket(data: AddItemInBasket, db: AsyncSession = Depends(get_session), user: Users = Depends(get_user_by_jwt)):
+    add_item = UserItem(user=user.id, item=data.item)
+    try:
+        db.add(add_item)
+        await db.commit()
+        return {'message': 'Success'}
+    except:
+        raise HTTPException(status_code=401)
+
+
+@auth.get('/me_basket', status_code=200)
+async def get_item_in_basket(db: AsyncSession = Depends(get_session), user: Users = Depends(get_user_by_jwt)):
+    try:
+        items = await db.execute(select(UserItem))
+        items = items.scalars().all()
+        return items
+    except:
+        raise HTTPException(status_code=401)
