@@ -45,7 +45,7 @@ async def get_category_by_id(id: int, db: AsyncSession):
     return category.scalar_one_or_none()
 
 
-async def get_item_by_id(id: int, db: AsyncSession):
+async def get_item_by_id(id: int, db: AsyncSession) -> Items:
     item = await db.execute(select(Items).where(Items.id == id))
     return item.scalar_one_or_none()
 

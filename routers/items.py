@@ -59,6 +59,7 @@ async def create(
 async def delete(id: int, db: AsyncSession = Depends(get_session), user: Users = Depends(get_user_by_jwt)):
     if user.role_id == 2:
         item = await get_item_by_id(id, db)
+        print(item.name)
         if item:
             await db.delete(item)
             await db.commit()
