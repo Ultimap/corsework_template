@@ -38,7 +38,7 @@ async def create(
         db: AsyncSession = Depends(get_session),
         user: Users = Depends(get_user_by_jwt)
 ) -> dict:
-    if user.role_id == 2:
+    if user.role_id == 1:
         item = Items(name=name, img=img.filename, description=description, characteristics=characteristics,
                      quantity=quantity, cost=cost, category=category_id)
         try:

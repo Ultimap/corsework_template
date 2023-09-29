@@ -19,7 +19,7 @@ class Users(Base):
     username = Column(String, nullable=False, unique=True)
     email = Column(String, nullable=True, unique=True)
     password = Column(String, nullable=False)
-    role_id = Column(ForeignKey(Roles.id), default=1)
+    role_id = Column(ForeignKey(Roles.id))
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
 
 
